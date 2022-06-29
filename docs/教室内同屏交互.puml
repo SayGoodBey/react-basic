@@ -1,0 +1,41 @@
+@startuml
+skinparam responseMessageBelowArrow true
+actor Teacher as t
+actor Student as stu
+participant TeacherClient as tc
+participant StuClient as sc
+participant LMS as lms
+participant Qbank as q
+participant Server as s
+
+== 编辑测验（发布测验前） ==
+
+group 正常流程-情况1
+t -> tc:点击学习活动(工具箱里的测验)
+group 老师客户端流程
+tc -> lms: 加载lms列表页
+lms -> q: 新建测验
+q -> s: 请求接口发布测验
+s --> q: ok(创建成功)
+q -> q: 跳转到批阅页面
+q -> tc: 通知测验开始
+end
+tc -> sc: 同步学生端老师正在布置测验
+
+group 学生客户端流程
+sc -> lms: 加载lms列表页
+lms -> sc: 获取当前活动的状态(getActivitiesStatus)
+sc -> lms: 返回当前活动信息-测验未开始（[{activityType:3,status:0}]）
+lms -> q: ifram加载测验（editor）
+q -> sc: 获取当前活动的状态(getActivitiesStatus)
+sc -> q: 返回当前活动信息-测验未开始（[{activityType:3,status:0}]）
+q -> q: 显示老师布置中遮罩
+end
+end
+
+group 退出教室重进-情况2
+end
+
+== 测验中 ==
+
+@enduml
